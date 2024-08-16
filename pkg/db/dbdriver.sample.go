@@ -11,12 +11,12 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-func DatabaseConn() (*sql.DB, error) {
-	db, err := sql.Open("pgx", "host=localhost port=5432 dbname=todo_list user=postgres password=raptor3796")
+func DatabaseConnSample() (*sql.DB, error) {
+	dbSample, err := sql.Open("pgx", "host= port= dbname= user= password=")
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	return db, nil
+	return dbSample, nil
 }

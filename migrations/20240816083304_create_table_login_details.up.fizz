@@ -1,0 +1,5 @@
+create_table("login_details") {
+    t.Column("id", "integer", {primary: true})
+    t.Column("user", "string")
+    t.Column("password", "string")
+}
