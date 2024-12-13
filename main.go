@@ -13,7 +13,7 @@ import (
 	"github.com/srisudarshanrg/go-setup-template/server/validations"
 )
 
-const portNumber = ":{put_your_port_number_here}"
+const portNumber = ":9000"
 
 var session *scs.SessionManager
 

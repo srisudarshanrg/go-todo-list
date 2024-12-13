@@ -1,0 +1,3 @@
+drop_table("habits")
+
+drop_foreign_key("habits", "habits_users_id_fk", {})

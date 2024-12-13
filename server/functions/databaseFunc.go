@@ -8,3 +8,13 @@ var db *sql.DB
 func DBAccessFunctions(dbAccess *sql.DB) {
 	db = dbAccess
 }
+
+// CreateUser creates a new user in the database
+func CreateUser(username string, email string, password string) (bool, error) {
+	return true, nil
+}
+
+// AuthenticateUser authenticates a user trying to login
+func AuthenticateUser(credential string, password string) (bool, error) {
+	return true, nil
+}
