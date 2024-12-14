@@ -54,6 +54,12 @@ func routes() http.Handler {
 	mux.Use(SessionLoadAndSave)
 
 	mux.Get("/", setup.Home)
+	mux.Get("/login", setup.Login)
+	mux.Get("/register", setup.Register)
+
+	mux.Post("/login", setup.LoginPost)
+	mux.Post("/register", setup.RegisterPost)
+	mux.Post("/", setup.HomePost)
 
 	fileServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))

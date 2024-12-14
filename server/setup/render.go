@@ -10,7 +10,7 @@ import (
 
 // RenderTemplate parses and executes a template
 func RenderTemplate(w http.ResponseWriter, tmpl string, templateData models.TemplateData) error {
-	template, err := template.ParseFiles("./templates/"+tmpl, "./templates/base.layout.tmpl")
+	template, err := template.ParseFiles("./templates/"+tmpl, "./templates/base.layout.tmpl", "./templates/auth.layout.tmpl")
 	if err != nil {
 		log.Println(err)
 		return err
