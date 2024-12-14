@@ -18,7 +18,7 @@ func DBAccessFunctions(dbAccess *sql.DB) {
 // CreateUser creates a new user in the database
 func CreateUser(username string, email string, passwordHash string) error {
 	createUserQuery := `insert into users(username, email, password, join_date, created_at, updated_at) values($1, $2, $3, $4, $5, $6)`
-	_, err := db.Exec(createUserQuery, username, email, passwordHash, time.Now(), time.Now(), time.Now())
+	_, err := db.Exec(createUserQuery, username, email, passwordHash, time.Now().Format("02-01-2006"), time.Now(), time.Now())
 	if err != nil {
 		log.Println(err)
 		return nil
