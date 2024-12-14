@@ -9,11 +9,12 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-func CreateDatabaseConnExample() (*sql.DB, error) {
-	db, err := sql.Open("pgx", "host=localhost port=5432 dbname= user= password=")
+func CreateDatabaseConn() (*sql.DB, error) {
+	db, err := sql.Open("pgx", "host=postgresql-raptor.alwaysdata.net port=5432 dbname=raptor_todo user=raptor password=velociraptor4796")
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
+
 	return db, nil
 }
