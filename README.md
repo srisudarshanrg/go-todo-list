@@ -1,8 +1,20 @@
-# go-setup-template
-This is a setup template for a Go project
+# go-todo-list
+This is a project aimed at helping people achieve three things:
+ - Managing their tasks
+ - Tracking their habits
+ - Making Notes
 
-## Problem
-Everytime I start doing a project in Go, it takes a significant amount of time to setup the entire project. So, I am not able to concentrate on doing the project itself.
+## Features
+ - Allows you to manage tasks and check them off
+ - Keeps track of time spent per habit
+ - Easy note making and updating, with a text-editor like interface
 
-## Solution
-I have created this repository as a starter template for Go project, to save time in setting up the project itself. I have saved myself a significant amount of time
+## Tools Used
+ - Go
+ - PostgreSQL
+ - HTML, CSS, JavaScript
+ - Bootstrap
+ - Soda Database Migrations
+ - Chart.js
+ - FontAwesome
+ - Google Fonts

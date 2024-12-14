@@ -1,16 +1,18 @@
 package main
 
 import (
+	"encoding/gob"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/go-chi/chi"
-	"github.com/srisudarshanrg/go-setup-template/server/database"
-	"github.com/srisudarshanrg/go-setup-template/server/functions"
-	"github.com/srisudarshanrg/go-setup-template/server/setup"
-	"github.com/srisudarshanrg/go-setup-template/server/validations"
+	"github.com/go-chi/chi/v5"
+	"github.com/srisudarshanrg/go-todo-list/server/database"
+	"github.com/srisudarshanrg/go-todo-list/server/functions"
+	"github.com/srisudarshanrg/go-todo-list/server/models"
+	"github.com/srisudarshanrg/go-todo-list/server/setup"
+	"github.com/srisudarshanrg/go-todo-list/server/validations"
 )
 
 const portNumber = ":9000"
@@ -18,6 +20,8 @@ const portNumber = ":9000"
 var session *scs.SessionManager
 
 func main() {
+	gob.Register(models.User{})
+
 	// session
 	session = scs.New()
 	session.Cookie.Persist = true
@@ -37,6 +41,7 @@ func main() {
 	setup.SessionAccessHandlers(session)
 	functions.DBAccessFunctions(db)
 	validations.DBAccessFormValidations(db)
+	validations.SessionAccessValidations(session)
 
 	// routes
 	server := http.Server{
@@ -57,9 +62,9 @@ func routes() http.Handler {
 	mux.Get("/login", setup.Login)
 	mux.Get("/register", setup.Register)
 
+	mux.Post("/", setup.HomePost)
 	mux.Post("/login", setup.LoginPost)
 	mux.Post("/register", setup.RegisterPost)
-	mux.Post("/", setup.HomePost)
 
 	fileServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))

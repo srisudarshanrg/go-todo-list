@@ -4,6 +4,7 @@ body {
     background-color: rgb(25, 25, 25);
     padding: 2%;
     text-align: center;
+    font-family: "Work Sans", sans-serif;
 }
 
 form {
@@ -13,7 +14,6 @@ form {
     margin-right: auto;
     padding: 1%;
     color: #fff;
-    font-family: "Work Sans", sans-serif;
 }
 
 form input {

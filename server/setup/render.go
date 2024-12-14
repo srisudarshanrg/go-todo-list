@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/srisudarshanrg/go-setup-template/server/models"
+	"github.com/srisudarshanrg/go-todo-list/server/models"
 )
 
 // RenderTemplate parses and executes a template
-func RenderTemplate(w http.ResponseWriter, tmpl string, templateData models.TemplateData) error {
+func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, templateData models.TemplateData) error {
 	template, err := template.ParseFiles("./templates/"+tmpl, "./templates/base.layout.tmpl", "./templates/auth.layout.tmpl")
 	if err != nil {
 		log.Println(err)

@@ -8,7 +8,7 @@ type User struct {
 	Username  string
 	Email     string
 	Password  string
-	JoinDate  time.Time
+	JoinDate  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
