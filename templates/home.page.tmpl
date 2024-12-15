@@ -1,13 +1,62 @@
 {{template "base" .}}
 
 {{define "title"}}
-
+    Home
 {{end}}
 
 {{define "css"}}
-
+    <link rel="stylesheet" href="/static/css/home.css.css">
 {{end}}
 
 {{define "content"}}
+    <div class="tasks">
+        <h1>Your Tasks <button class="btn btn-success"><i class="fa-solid fa-plus"></i> Task</button></h1>
+        <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
+            <div class="row">
+                <div class="col-8">
+                    <input type="text" name="searchTasks" id="searchTasks" placeholder="Search Tasks" class="form-control" style="width: 100%;">
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-warning" style="width: 100%;">Search</button>
+                </div>
+            </div>
+        </form>
+        <div class="all-tasks">
 
+        </div>
+    </div>
+
+    <div class="habits">
+        <h1>Your Habits <button class="btn btn-success"><i class="fa-solid fa-plus"></i> Habit</button></h1>
+        <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
+            <div class="row">
+                <div class="col-8">
+                    <input type="text" name="searchHabits" id="searchHabits" placeholder="Search Habits" class="form-control" style="width: 100%;">
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-warning" style="width: 100%;">Search</button>
+                </div>
+            </div>
+        </form>
+        <div class="all-habits">
+            
+        </div>
+    </div>
+
+    <div class="notes">
+        <h1>Your Notes <button class="btn btn-success"><i class="fa-solid fa-plus"></i> Note</button></h1>
+        <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
+            <div class="row">
+                <div class="col-8">
+                    <input type="text" name="searchNotes" id="searchNotes" placeholder="Search Notes" class="form-control" style="width: 100%;">
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-warning" style="width: 100%;">Search</button>
+                </div>
+            </div>
+        </form>
+        <div class="all-notes">
+            
+        </div>
+    </div>
 {{end}}

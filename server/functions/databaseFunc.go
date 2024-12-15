@@ -74,3 +74,34 @@ func AuthenticateUser(credential string, password string) (bool, string, models.
 
 	return true, "Successfully logged in", user, err
 }
+
+// CreateTask creates a new task in the database
+func CreateTask(name string, duration int, completedStatus bool, userID int) error {
+	addTaskQuery := `insert into tasks(name, duration, completed_status, user_id, created_at, updated_at) values($1, $2, $3, $4, $5, $6)`
+	_, err := db.Exec(addTaskQuery, name, duration, completedStatus, userID, time.Now(), time.Now())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CreateHabit creates a habit task in the database
+func CreateHabit(name string, description string, time_start time.Time, time_end time.Time, userID int) error {
+	duration := time_end.Sub(time_start)
+	addHabitQuery := `insert into habits(name, description, time_start, time_end, duration, user_id, created_at, updated_at) values($1, $2, $3, $4, $5, $6, $7, $8)`
+	_, err := db.Exec(addHabitQuery, name, description, time_start, time_end, duration, userID, time.Now(), time.Now())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CreateNote creates a new note in the database
+func CreateNote(name string, description string, userID int) error {
+	addNoteQuery := `insert into notes(name, description, user_id, created_at, updated_at) values($1, $2, $3, $4, $5)`
+	_, err := db.Exec(addNoteQuery, name, description, userID, time.Now(), time.Now())
+	if err != nil {
+		return err
+	}
+	return nil
+}

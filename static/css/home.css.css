@@ -1,0 +1,6 @@
+div.tasks, div.habits, div.notes {
+    text-align: center;
+    margin-top: 3%;
+    font-family: "Work Sans", sans-serif;
+    color: #fff;
+}
