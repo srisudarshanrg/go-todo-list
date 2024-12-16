@@ -22,6 +22,20 @@
         </head>
         
         <body>
+            {{if .Info}}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{.Info}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {{end}}
+
+            {{if .Error}}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{.Error}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {{end}}
+
             {{block "content" .}}
 
             {{end}}

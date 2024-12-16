@@ -3,6 +3,8 @@ package setup
 import (
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/srisudarshanrg/go-todo-list/server/functions"
 	"github.com/srisudarshanrg/go-todo-list/server/models"
@@ -89,8 +91,54 @@ func RegisterPost(w http.ResponseWriter, r *http.Request) {
 
 // HomePost handles the post requests to the login page
 func HomePost(w http.ResponseWriter, r *http.Request) {
+	userInterface := session.Get(r.Context(), "user")
+	user, check := userInterface.(models.User)
+	if !check {
+		msg := "Login is required to access this page"
+		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
+	}
+
 	err := r.ParseForm()
 	if err != nil {
 		log.Println(err)
+	}
+
+	taskName := r.Form.Get("taskName")
+	habitName := r.Form.Get("habitName")
+	noteName := r.Form.Get("noteName")
+
+	if taskName != "" {
+		taskDuration, err := strconv.Atoi(r.Form.Get("taskDuration"))
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.CreateTask(taskName, taskDuration, false, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	} else if habitName != "" {
+		habitDescription := r.Form.Get("habitDescription")
+		habitTimeStart, err := time.Parse("15:04", r.Form.Get("habitTimeStart"))
+		if err != nil {
+			log.Println(err)
+		}
+		habitTimeEnd, err := time.Parse("15:04", r.Form.Get("habitTimeEnd"))
+		if err != nil {
+			log.Println(err)
+		}
+
+		err = functions.CreateHabit(habitName, habitDescription, habitTimeStart, habitTimeEnd, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	} else if noteName != "" {
+		noteDescription := r.Form.Get("noteDescription")
+		err = functions.CreateNote(noteName, noteDescription, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }

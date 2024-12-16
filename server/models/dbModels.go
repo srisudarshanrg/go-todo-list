@@ -17,21 +17,11 @@ type User struct {
 type Task struct {
 	ID              int
 	Name            string
-	Duration        time.Duration
+	Duration        int
 	CompletedStatus bool
 	UserID          int
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-}
-
-// Note is the model for a note object in the database
-type Note struct {
-	ID          int
-	Name        string
-	Description string
-	UserID      int
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
 }
 
 // Habit is the model for a habit object in the database
@@ -41,7 +31,17 @@ type Habit struct {
 	Description string
 	TimeStart   time.Time
 	TimeEnd     time.Time
-	Duration    time.Duration
+	Duration    int
+	UserID      int
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+// Note is the model for a note object in the database
+type Note struct {
+	ID          int
+	Name        string
+	Description string
 	UserID      int
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

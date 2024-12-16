@@ -9,8 +9,78 @@
 {{end}}
 
 {{define "content"}}
+    <!-- add task modal -->
+    <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-bg-dark">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addTaskModalLabel">ADD TASK</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: #fff;"></button>
+                </div>
+                <form method="post">
+                    <div class="modal-body">
+                        <input type="text" name="taskName" placeholder="Task Name" class="form-control" required>
+                        <input type="number" name="taskDuration" placeholder="Task Duration" class="form-control" style="margin-top: 3%;">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning"><i class="fa-solid fa-plus"></i> Add Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- add habit modal -->
+    <div class="modal fade" id="addHabitModal" tabindex="-1" aria-labelledby="addHabitModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-bg-dark">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addHabitModalLabel">ADD HABIT</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: #fff;"></button>
+                </div>
+                <form method="post">
+                    <div class="modal-body">
+                        <input type="text" name="habitName" placeholder="Habit Name" class="form-control" required>
+                        <textarea name="habitDescription" placeholder="Habit Description" class="form-control" style="margin-top: 3%;" rows="3"></textarea>
+                        <label for="habitTimeStart" style="margin-top: 3%;">Time Start:</label>
+                        <input type="time" name="habitTimeStart" placeholder="Time Start" class="form-control" required>
+                        <label for="habitTimeEnd" style="margin-top: 3%;">Time End:</label>
+                        <input type="time" name="habitTimeEnd" placeholder="Time End" class="form-control" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning"><i class="fa-solid fa-plus"></i> Add Habit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- add note modal -->
+    <div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-bg-dark">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addNoteModalLabel">ADD NOTE</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: #fff;"></button>
+                </div>
+                <form method="post">
+                    <div class="modal-body">
+                        <input type="text" name="noteName" placeholder="Note Name" class="form-control" required>
+                        <textarea name="noteDescription" placeholder="Note Description" class="form-control" style="margin-top: 3%;" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning"><i class="fa-solid fa-plus"></i> Add Note</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="tasks">
-        <h1>Your Tasks <button class="btn btn-success"><i class="fa-solid fa-plus"></i> Task</button></h1>
+        <h1>Your Tasks <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal"><i class="fa-solid fa-plus"></i> Task</button></h1>
         <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
             <div class="row">
                 <div class="col-8">
@@ -22,12 +92,59 @@
             </div>
         </form>
         <div class="all-tasks">
-
+            {{$tasks := index .Data "tasks"}}
+            {{range $task := $tasks}}
+                <div class="task">
+                    {{if eq $task.CompletedStatus true}}
+                        <div class="row">
+                            <div class="col">
+                                <h3><strike>{{$task.Name}}</strike></h3>
+                                <h4><strike>{{$task.Duration}} mins</strike></h4>
+                            </div>
+                            <div class="col completed-status">                                
+                                <form method="post" id="removeCheckForm">
+                                    <input type="hidden" name="removeCheckID" value="{{$task.ID}}">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <label for="removeCheck">Completed</label>
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="radio" name="removeCheck" checked onclick="submitRadioForm('removeCheckForm')">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {{else}}
+                        <div class="row">
+                            <div class="col">
+                                <h3>{{$task.Name}}</h3>
+                                <h4>{{$task.Duration}} mins</h4>
+                            </div>
+                            <div class="col completed-status"> 
+                                <form method="post" id="addCheckForm">
+                                    <input type="hidden" name="addCheckID" value="{{$task.ID}}">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <label for="addCheck">Completed</label>
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="radio" name="addCheck" onclick="submitRadioForm('addCheckForm')">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {{end}}
+                </div>                    
+            {{end}}
         </div>
     </div>
 
+    <hr>
+
     <div class="habits">
-        <h1>Your Habits <button class="btn btn-success"><i class="fa-solid fa-plus"></i> Habit</button></h1>
+        <h1>Your Habits <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addHabitModal"><i class="fa-solid fa-plus"></i> Habit</button></h1>
         <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
             <div class="row">
                 <div class="col-8">
@@ -39,12 +156,17 @@
             </div>
         </form>
         <div class="all-habits">
-            
+            {{$habits := index .Data "habits"}}
+            {{range $habit := $habits}}
+                <p>{{$habit.Name}}</p>
+            {{end}}
         </div>
     </div>
 
+    <hr>
+
     <div class="notes">
-        <h1>Your Notes <button class="btn btn-success"><i class="fa-solid fa-plus"></i> Note</button></h1>
+        <h1>Your Notes <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addNoteModal"><i class="fa-solid fa-plus"></i> Note</button></h1>
         <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
             <div class="row">
                 <div class="col-8">
@@ -56,7 +178,18 @@
             </div>
         </form>
         <div class="all-notes">
-            
+            {{$notes := index .Data "notes"}}
+            {{range $note := $notes}}
+                <p>{{$note.Name}}</p>
+            {{end}}
         </div>
     </div>
+
+    <script>
+        // submitRadioForm submits the a given form
+        function submitRadioForm(formToSubmit) {
+            document.getElementById(formToSubmit).submit();
+            console.log(formToSubmit)
+        }
+    </script>
 {{end}}

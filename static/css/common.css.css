@@ -20,3 +20,27 @@ nav .nav-link:hover {
 nav .navbar-nav .margin {
     margin-left: 45px;
 }
+
+nav .logout:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+@media (max-width: 991.5px) {
+    nav .navbar-nav .margin {
+        margin-left: 0;
+    }
+
+    nav .right-end {
+        display: flex;
+        flex-direction: row;
+        gap: 45px;
+        margin-left: 45px;
+    }
+}
+
+@media (max-width: 481.5px) {
+    nav .right-end {
+        margin-left: 0;
+    }
+}
