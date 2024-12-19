@@ -3,6 +3,7 @@ package functions
 import (
 	"database/sql"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/srisudarshanrg/go-todo-list/server/models"
@@ -125,6 +126,78 @@ func CreateTask(name string, duration int, completedStatus bool, userID int) err
 	return nil
 }
 
+// AddCheckForTask markes the status of the task as completed in the database
+func AddCheckForTask(id int, userID int) error {
+	addCheckQuery := `update tasks set completed_status=$1 where id=$2 and user_id=$3`
+	_, err := db.Exec(addCheckQuery, true, id, userID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+// RemoveCheckForTask markes the status of the task as incomplete in the database
+func RemoveCheckForTask(id int, userID int) error {
+	addCheckQuery := `update tasks set completed_status=$1 where id=$2 and user_id=$3`
+	_, err := db.Exec(addCheckQuery, false, id, userID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+// SearchTask searches for a task in the database based on the key and userID
+func SearchTask(key string, userID int) ([]models.Task, error) {
+	keyLower := strings.ToLower(key)
+	keyArg := "%" + keyLower + "%"
+	searchTasksQuery := `select * from tasks where lower(name) like $1 and user_id=$2`
+	rows, err := db.Query(searchTasksQuery, keyArg, userID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var searchResults []models.Task
+	for rows.Next() {
+		var id, duration, userID int
+		var name string
+		var completedStatus bool
+		var createdAt, updatedAt time.Time
+
+		err = rows.Scan(&id, &name, &duration, &completedStatus, &userID, &createdAt, &updatedAt)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+
+		task := models.Task{
+			ID:              id,
+			Name:            name,
+			Duration:        duration,
+			CompletedStatus: completedStatus,
+			CreatedAt:       createdAt,
+			UpdatedAt:       updatedAt,
+		}
+
+		searchResults = append(searchResults, task)
+	}
+
+	return searchResults, nil
+}
+
+// DeleteTask deletes a task for a given id and userID from the database
+func DeleteTask(id int, userID int) error {
+	deleteTaskQuery := `delete from tasks where id=$1 and user_id=$2`
+	_, err := db.Exec(deleteTaskQuery, id, userID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
 // GetHabits gets all the habits of a given user
 func GetHabits(userID int) ([]models.Habit, error) {
 	getHabitsQuery := `select * from habits where user_id=$1`
@@ -152,8 +225,8 @@ func GetHabits(userID int) ([]models.Habit, error) {
 			ID:          id,
 			Name:        name,
 			Description: description,
-			TimeStart:   timeStart,
-			TimeEnd:     timeEnd,
+			TimeStart:   timeStart.Format("15:04"),
+			TimeEnd:     timeEnd.Format("15:04"),
 			Duration:    duration,
 			UserID:      userID,
 			CreatedAt:   createdAt,
@@ -167,11 +240,63 @@ func GetHabits(userID int) ([]models.Habit, error) {
 }
 
 // CreateHabit creates a habit task in the database
-func CreateHabit(name string, description string, time_start time.Time, time_end time.Time, userID int) error {
-	duration := int32(time_end.Sub(time_start).Minutes())
+func CreateHabit(name string, description string, timeStart time.Time, timeEnd time.Time, userID int) error {
+	duration := int32(timeEnd.Sub(timeStart).Minutes())
 	addHabitQuery := `insert into habits(name, description, time_start, time_end, duration, user_id, created_at, updated_at) values($1, $2, $3, $4, $5, $6, $7, $8)`
-	_, err := db.Exec(addHabitQuery, name, description, time_start, time_end, duration, userID, time.Now(), time.Now())
+	_, err := db.Exec(addHabitQuery, name, description, timeStart, timeEnd, duration, userID, time.Now(), time.Now())
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// SearchHabit searches for a habit in the database based on the key and userID
+func SearchHabit(key string, userID int) ([]models.Habit, error) {
+	keyLower := strings.ToLower(key)
+	keyArg := "%" + keyLower + "%"
+	searchHabitsQuery := `select * from habits where lower(name) like $1 or lower(description) like $1 and user_id=$2`
+	rows, err := db.Query(searchHabitsQuery, keyArg, userID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var searchResults []models.Habit
+	for rows.Next() {
+		var id, duration, userID int
+		var name, description string
+		var timeStart, timeEnd, createdAt, updatedAt time.Time
+
+		err = rows.Scan(&id, &name, &description, &timeStart, &timeEnd, &duration, &userID, &createdAt, &updatedAt)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+
+		habit := models.Habit{
+			ID:          id,
+			Name:        name,
+			Description: description,
+			TimeStart:   timeStart.Format("15:04"),
+			TimeEnd:     timeEnd.Format("15:04"),
+			Duration:    duration,
+			UserID:      userID,
+			CreatedAt:   createdAt,
+			UpdatedAt:   updatedAt,
+		}
+
+		searchResults = append(searchResults, habit)
+	}
+
+	return searchResults, nil
+}
+
+// DeleteHabit deletes a habit for a given id and userID
+func DeleteHabit(id int, userID int) error {
+	deleteHabitQuery := `delete from habits where id=$1 and user_id=$2`
+	_, err := db.Exec(deleteHabitQuery, id, userID)
+	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -219,6 +344,66 @@ func CreateNote(name string, description string, userID int) error {
 	addNoteQuery := `insert into notes(name, description, user_id, created_at, updated_at) values($1, $2, $3, $4, $5)`
 	_, err := db.Exec(addNoteQuery, name, description, userID, time.Now(), time.Now())
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateNote updates new changes of a note in the database
+func UpdateNote(id int, name string, description string, userID int) error {
+	updateNoteQuery := `update notes set name=$1, description=$2 where id=$3 and user_id=$4`
+	_, err := db.Exec(updateNoteQuery, name, description, id, userID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+// SearchNote searches for a note in the database based on a key
+func SearchNote(key string, userID int) ([]models.Note, error) {
+	keyLower := strings.ToLower(key)
+	keyArg := "%" + keyLower + "%"
+	searchNoteQuery := `select * from notes where name like $1 or description like $1 and user_id=$2`
+	rows, err := db.Query(searchNoteQuery, keyArg, userID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	var searchResults []models.Note
+	for rows.Next() {
+		var id, userID int
+		var name, description string
+		var createdAt, updatedAt time.Time
+
+		err = rows.Scan(&id, &name, &description, &userID, &createdAt, &updatedAt)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+
+		note := models.Note{
+			ID:          id,
+			Name:        name,
+			Description: description,
+			UserID:      userID,
+			CreatedAt:   createdAt,
+			UpdatedAt:   updatedAt,
+		}
+
+		searchResults = append(searchResults, note)
+	}
+
+	return searchResults, nil
+}
+
+// DeleteNote deletes a note for a given id and userID
+func DeleteNote(id int, userID int) error {
+	deleteNoteQuery := `delete from notes where id=$1 and user_id=$2`
+	_, err := db.Exec(deleteNoteQuery, id, userID)
+	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil

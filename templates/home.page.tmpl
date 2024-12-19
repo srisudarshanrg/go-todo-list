@@ -79,6 +79,149 @@
         </div>
     </div>
 
+    <!-- search results for tasks modal -->
+    {{if and .PostData (ne (index .PostData "searchResultsTasks") nil)}}
+        <div class="modal show fade d-block" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content text-bg-dark">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">SEARCH RESULTS - YOUR TASKS</h1>
+                        <a href="/home" class="btn-close" style="background-color: #fff;"></a>
+                    </div>
+                    <div class="modal-body">
+                        {{$searchResultsTasks := index .PostData "searchResultsTasks"}}
+                        {{range $task := $searchResultsTasks}}
+                            <div class="task" style="margin-top: 3%;">
+                                {{if eq $task.CompletedStatus true}}
+                                    <div class="row">
+                                        <div class="col">
+                                            <h3><strike>{{$task.Name}}</strike></h3>
+                                            <h4><strike>{{$task.Duration}} mins</strike></h4>
+                                        </div>
+                                        <div class="col completed-status">                                
+                                            <form method="post" id="removeCheckForm">
+                                                <input type="hidden" name="removeCheckID" value="{{$task.ID}}">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <label for="removeCheck">Completed</label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square-check"></i></button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <form method="post">
+                                            <input type="hidden" name="deleteTaskID" value="{{$task.ID}}">
+                                            <button type="submit" class="btn btn-outline-danger" style="width: 100%;"><i class="fa-solid fa-trash-can"></i></button>
+                                        </form>
+                                    </div>
+                                {{else}}
+                                    <div class="row">
+                                        <div class="col">
+                                            <h3>{{$task.Name}}</h3>
+                                            <h4>{{$task.Duration}} mins</h4>
+                                        </div>
+                                        <div class="col completed-status"> 
+                                            <form method="post" id="addCheckForm">
+                                                <input type="hidden" name="addCheckID" value="{{$task.ID}}">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <label for="addCheck">Completed</label>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square"></i></button>
+                                                    </div>
+                                                </div>
+                                            </form>                                
+                                        </div>
+                                        <form method="post">
+                                            <input type="hidden" name="deleteTaskID" value="{{$task.ID}}">
+                                            <button type="submit" class="btn btn-outline-danger" style="width: 100%;"><i class="fa-solid fa-trash-can"></i></button>
+                                        </form>
+                                    </div>
+                                {{end}}
+                            </div>
+                        {{end}}
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/home" class="btn btn-warning">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{end}}
+
+    <!-- search results for habits modal -->
+    {{if and .PostData (ne (index .PostData "searchResultsHabits") nil)}}
+        <div class="modal show fade d-block" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content text-bg-dark">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">SEARCH RESULTS - YOUR HABITS</h1>
+                        <a href="/home" class="btn-close" style="background-color: #fff;"></a>
+                    </div>
+                    <div class="modal-body">
+                        {{$searchResultsHabits := index .PostData "searchResultsHabits"}}
+                        {{range $habit := $searchResultsHabits}}
+                            <div class="habit-container" style="margin-top: 3%;">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <h3>{{$habit.Name}}</h3>
+                                        <p>{{$habit.Description}}</p>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <br>
+                                        <p><i class="fa-solid fa-clock"></i> {{$habit.TimeStart}} - {{$habit.TimeEnd}}</p>
+                                        <p><i class="fa-solid fa-stopwatch"></i> {{$habit.Duration}} Minutes</p>
+                                        <form method="post">
+                                            <input type="hidden" name="deleteHabitID" value="{{$habit.ID}}">
+                                            <button type="submit" class="btn btn-outline-danger" style="width: 100%;"><i class="fa-solid fa-trash-can"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {{end}}
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/home" class="btn btn-warning">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{end}}
+
+    <!-- search results for notes modal -->
+    {{if and .PostData (ne (index .PostData "searchResultsNotes") nil)}}
+        <div class="modal show fade d-block" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content text-bg-dark">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">SEARCH RESULTS - YOUR NOTES</h1>
+                        <a href="/home" class="btn-close" style="background-color: #fff;"></a>
+                    </div>
+                    <div class="modal-body">
+                        {{$searchResultsNotes := index .PostData "searchResultsNotes"}}
+                        {{range $note := $searchResultsNotes}}
+                            <div class="note-container" style="margin-top: 3%;">
+                                <h3>{{$note.Name}}</h3>
+                                <form method="post">
+                                    <input type="hidden" name="noteIDEdit" value="{{$note.ID}}">
+                                    <input type="text" name="noteNameEdit" value="{{$note.Name}}" class="form-control" style="margin-top: 1%;">
+                                    <textarea name="noteDescriptionEdit" class="form-control" rows="3" style="margin-top: 1%;">{{$note.Description}}</textarea>
+                                    <button type="submit" class="btn btn-warning" style="margin-top: 4%;"><i class="fa-solid fa-pencil"></i> Save Changes</button>
+                                </form>                        
+                            </div>
+                        {{end}}
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/home" class="btn btn-warning">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{end}}
+
     <div class="tasks">
         <h1>Your Tasks <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal"><i class="fa-solid fa-plus"></i> Task</button></h1>
         <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
@@ -109,11 +252,15 @@
                                             <label for="removeCheck">Completed</label>
                                         </div>
                                         <div class="col-4">
-                                            <input type="radio" name="removeCheck" checked onclick="submitRadioForm('removeCheckForm')">
+                                            <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square-check"></i></button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
+                            <form method="post">
+                                <input type="hidden" name="deleteTaskID" value="{{$task.ID}}">
+                                <button type="submit" class="btn btn-outline-danger" style="width: 100%;"><i class="fa-solid fa-trash-can"></i></button>
+                            </form>
                         </div>
                     {{else}}
                         <div class="row">
@@ -129,11 +276,15 @@
                                             <label for="addCheck">Completed</label>
                                         </div>
                                         <div class="col-4">
-                                            <input type="radio" name="addCheck" onclick="submitRadioForm('addCheckForm')">
+                                            <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square"></i></button>
                                         </div>
                                     </div>
-                                </form>
+                                </form>                                
                             </div>
+                            <form method="post">
+                                <input type="hidden" name="deleteTaskID" value="{{$task.ID}}">
+                                <button type="submit" class="btn btn-outline-danger" style="width: 100%;"><i class="fa-solid fa-trash-can"></i></button>
+                            </form>
                         </div>
                     {{end}}
                 </div>                    
@@ -158,7 +309,23 @@
         <div class="all-habits">
             {{$habits := index .Data "habits"}}
             {{range $habit := $habits}}
-                <p>{{$habit.Name}}</p>
+                <div class="habit-container">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <h3>{{$habit.Name}}</h3>
+                            <p>{{$habit.Description}}</p>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <br>
+                            <p><i class="fa-solid fa-clock"></i> {{$habit.TimeStart}} - {{$habit.TimeEnd}}</p>
+                            <p><i class="fa-solid fa-stopwatch"></i> {{$habit.Duration}} Minutes</p>
+                            <form method="post">
+                                <input type="hidden" name="deleteHabitID" value="{{$habit.ID}}">
+                                <button type="submit" class="btn btn-outline-danger" style="width: 100%;"><i class="fa-solid fa-trash-can"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             {{end}}
         </div>
     </div>
@@ -180,16 +347,20 @@
         <div class="all-notes">
             {{$notes := index .Data "notes"}}
             {{range $note := $notes}}
-                <p>{{$note.Name}}</p>
+                <div class="note-container">
+                    <h3>{{$note.Name}}</h3>
+                    <form method="post">
+                        <input type="hidden" name="noteIDEdit" value="{{$note.ID}}">
+                        <input type="text" name="noteNameEdit" value="{{$note.Name}}" class="form-control" style="margin-top: 1%;">
+                        <textarea name="noteDescriptionEdit" class="form-control" rows="3" style="margin-top: 1%;">{{$note.Description}}</textarea>
+                        <button type="submit" class="btn btn-warning" style="margin-top: 4%;"><i class="fa-solid fa-pencil"></i> Save Changes</button>
+                    </form>
+                    <form method="post">
+                        <input type="hidden" name="deleteNoteID" value="{{$note.ID}}">
+                        <button type="submit" class="btn btn-outline-danger" style="margin-top: 4%;"><i class="fa-solid fa-trash-can"></i></button>
+                    </form>                        
+                </div>
             {{end}}
         </div>
     </div>
-
-    <script>
-        // submitRadioForm submits the a given form
-        function submitRadioForm(formToSubmit) {
-            document.getElementById(formToSubmit).submit();
-            console.log(formToSubmit)
-        }
-    </script>
 {{end}}

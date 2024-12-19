@@ -35,7 +35,7 @@ func LoginPost(w http.ResponseWriter, r *http.Request) {
 	// put user in session
 	session.Put(r.Context(), "user", user)
 
-	http.Redirect(w, r, "/?msg="+msg, http.StatusSeeOther)
+	http.Redirect(w, r, "/home?msg="+msg, http.StatusSeeOther)
 }
 
 // RegisterPost handles the post requests to the login page
@@ -106,6 +106,15 @@ func HomePost(w http.ResponseWriter, r *http.Request) {
 	taskName := r.Form.Get("taskName")
 	habitName := r.Form.Get("habitName")
 	noteName := r.Form.Get("noteName")
+	addCheckID := r.Form.Get("addCheckID")
+	removeCheckID := r.Form.Get("removeCheckID")
+	deleteTaskID := r.Form.Get("deleteTaskID")
+	deleteHabitID := r.Form.Get("deleteHabitID")
+	searchTasks := r.Form.Get("searchTasks")
+	searchHabits := r.Form.Get("searchHabits")
+	noteIDEdit := r.Form.Get("noteIDEdit")
+	searchNotes := r.Form.Get("searchNotes")
+	deleteNoteID := r.Form.Get("deleteNoteID")
 
 	if taskName != "" {
 		taskDuration, err := strconv.Atoi(r.Form.Get("taskDuration"))
@@ -116,7 +125,7 @@ func HomePost(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	} else if habitName != "" {
 		habitDescription := r.Form.Get("habitDescription")
 		habitTimeStart, err := time.Parse("15:04", r.Form.Get("habitTimeStart"))
@@ -132,13 +141,109 @@ func HomePost(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	} else if noteName != "" {
 		noteDescription := r.Form.Get("noteDescription")
 		err = functions.CreateNote(noteName, noteDescription, user.ID)
 		if err != nil {
 			log.Println(err)
 		}
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	} else if addCheckID != "" {
+		addCheckIDConverted, err := strconv.Atoi(addCheckID)
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.AddCheckForTask(addCheckIDConverted, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	} else if removeCheckID != "" {
+		removeCheckIDConverted, err := strconv.Atoi(removeCheckID)
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.RemoveCheckForTask(removeCheckIDConverted, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	} else if deleteTaskID != "" {
+		deleteTaskIDConverted, err := strconv.Atoi(deleteTaskID)
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.DeleteTask(deleteTaskIDConverted, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	} else if deleteHabitID != "" {
+		deleteHabitIDConverted, err := strconv.Atoi(deleteHabitID)
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.DeleteHabit(deleteHabitIDConverted, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	} else if searchTasks != "" {
+		log.Println(searchTasks)
+		results, err := functions.SearchTask(searchTasks, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		postData := map[string]interface{}{}
+		postData["searchResultsTasks"] = results
+		RenderTemplate(w, r, "home.page.tmpl", models.TemplateData{
+			Data:     data,
+			PostData: postData,
+		})
+	} else if searchHabits != "" {
+		results, err := functions.SearchHabit(searchHabits, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		postData := map[string]interface{}{}
+		postData["searchResultsHabits"] = results
+		RenderTemplate(w, r, "home.page.tmpl", models.TemplateData{
+			Data:     data,
+			PostData: postData,
+		})
+	} else if noteIDEdit != "" {
+		noteIDEditConverted, err := strconv.Atoi(noteIDEdit)
+		if err != nil {
+			log.Println(err)
+		}
+		noteNameEdit := r.Form.Get("noteNameEdit")
+		noteDescriptionEdit := r.Form.Get("noteDescriptionEdit")
+		err = functions.UpdateNote(noteIDEditConverted, noteNameEdit, noteDescriptionEdit, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	} else if searchNotes != "" {
+		results, err := functions.SearchNote(searchNotes, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		postData := map[string]interface{}{}
+		postData["searchResultsNotes"] = results
+		RenderTemplate(w, r, "home.page.tmpl", models.TemplateData{
+			Data:     data,
+			PostData: postData,
+		})
+	} else if deleteNoteID != "" {
+		deleteNoteIDConverted, err := strconv.Atoi(deleteNoteID)
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.DeleteNote(deleteNoteIDConverted, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }

@@ -12,6 +12,7 @@ import (
 
 var db *sql.DB
 var session *scs.SessionManager
+var data = map[string]interface{}{}
 
 // DBAccess provides the handlers with access to the database
 func DBAccessHandlers(dbAccess *sql.DB) {
@@ -79,7 +80,6 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	data := map[string]interface{}{}
 	data["tasks"] = tasks
 	data["habits"] = habits
 	data["notes"] = notes

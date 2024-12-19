@@ -29,8 +29,8 @@ type Habit struct {
 	ID          int
 	Name        string
 	Description string
-	TimeStart   time.Time
-	TimeEnd     time.Time
+	TimeStart   string
+	TimeEnd     string
 	Duration    int
 	UserID      int
 	CreatedAt   time.Time
