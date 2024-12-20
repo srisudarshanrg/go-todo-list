@@ -1,0 +1,41 @@
+.tasks {    
+    color: #fff;
+    padding: 1%;
+    font-family: "Open Sans", sans-serif;
+}
+
+.task-row {
+    display: grid;
+    grid-template-columns: 60% 38%;
+    gap: 2%;
+    width: 100%;
+}
+
+.all-tasks {
+    height: 75vh;
+    overflow-y: scroll;
+    padding-right: 1%;
+}
+
+.task {
+    border: 4px solid rgb(255, 216, 0);
+    border-radius: 5px;
+    padding: 1%;
+    transition: 0.3s;
+}
+
+.task:hover {
+    cursor: pointer;
+    transform: scale(0.99);
+    transition: 0.3s;
+}
+
+@media (max-width: 768.5px) {
+    .all-tasks {
+        grid-template-columns: auto;
+    }
+
+    .task-row {
+        display: block;
+    }
+}

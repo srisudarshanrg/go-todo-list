@@ -1,0 +1,26 @@
+body {
+    font-family: "Montserrat";
+    color: rgb(255, 216, 0);
+}
+
+.profile {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    text-align: center;
+    gap: 10px;
+    padding: 1%;
+}
+
+.profile div {
+    border: 3px solid rgb(255, 216, 0);
+    padding: 1%;
+    border-radius: 5px;
+    transition: 0.2s;
+}
+
+.profile div:hover {
+    background-color: rgb(255, 216, 0);
+    color: #000;
+    transition: 0.2s;
+    cursor: pointer;
+}

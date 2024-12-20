@@ -1,0 +1,29 @@
+{{template "base" .}}
+
+{{define "title"}}
+    Profile
+{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/profile.css">
+{{end}}
+
+{{define "content"}}
+    <h1 style="text-align: center; margin-top: 1%;">Your Profile</h1>
+    <div class="profile">
+        <div>
+            <h5>Username</h5>
+            <h2>{{.Data.Username}}</h2>
+        </div>
+
+        <div>
+            <h5>Email</h5>
+            <h2>{{.Data.Email}}</h2>
+        </div>
+
+        <div>
+            <h5>Join Date</h5>
+            <h2>{{.Data.JoinDate}}</h2>
+        </div>
+    </div>
+{{end}}

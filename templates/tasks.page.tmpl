@@ -1,0 +1,108 @@
+{{template "base" .}}
+
+{{define "title"}}
+    Tasks
+{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/tasks.css.css">
+{{end}}
+
+{{define "content"}}
+    <!-- add task modal -->
+    <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-bg-dark">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addTaskModalLabel">ADD TASK</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: #fff;"></button>
+                </div>
+                <form method="post">
+                    <div class="modal-body">
+                        <input type="text" name="taskName" placeholder="Task Name" class="form-control" required>
+                        <input type="number" name="taskDuration" placeholder="Task Duration" class="form-control" style="margin-top: 3%;">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal" style="background-color: rgb(20, 20, 20); color: #fff;">Close</button>
+                        <button type="submit" class="btn btn-warning"><i class="fa-solid fa-plus"></i> Add Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="tasks">
+        <h1 style="text-align: center;">Tasks <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal"><i class="fa-solid fa-plus"></i> Task</button> <a href="/tasks-list" class="btn btn-warning"><i class="fa-solid fa-list"></i> List View</a></h1>
+        <div class="task-row">    
+            <div class="all-tasks">
+                {{$tasks := index .Data "tasks"}}
+                {{range $task := $tasks}}
+                    <div class="task" style="margin-top: 3%;">
+                        {{if eq $task.CompletedStatus true}}
+                            <h3><strike>{{$task.Name}}</strike></h3>
+                            <h4><strike>{{$task.Duration}} mins</strike></h4>
+                            <form method="post" id="removeCheckForm">
+                                <input type="hidden" name="removeCheckID" value="{{$task.ID}}">
+                                <label>Completion Status:</label>
+                                <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square-check"></i></button>
+                            </form>
+                        {{else}}
+                            <h3>{{$task.Name}}</h3>
+                            <h4>{{$task.Duration}} mins</h4>
+                            <form method="post" id="addCheckForm">
+                                <input type="hidden" name="addCheckID" value="{{$task.ID}}">
+                                <label>Completion Status:</label>
+                                <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square"></i></button>
+                            </form>
+                        {{end}}
+                        <form method="post" style="margin-top: 1%;">
+                            <input type="hidden" name="deleteTaskID" value="{{$task.ID}}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button>
+                        </form>
+                    </div>
+                {{end}}
+            </div>
+            <div class="chart" style="background-color: rgb(35, 35, 35); margin-top: 1%; padding: 1%;">
+                <canvas id="completed-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var labels = ["Completed Tasks", "Incomplete Tasks"]
+        var data = JSON.parse('{{index .Data "completedTasks"}}')
+        var backgroundColors = ["rgb(255, 216, 0)", "rgb(0, 0, 0)"]
+
+        var ctx = document.getElementById("completed-chart").getContext("2d");
+        var completedChart = new Chart(ctx, {
+            type: "pie",
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: "Number",
+                        data: data,                        
+                        backgroundColor: backgroundColors,
+                        borderColor: "rgb(255, 255, 255)",
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Task Completion Status",
+                        font: {
+                            family: "'Work Sans', sans-serif",
+                            size: 20,
+                            weight: "normal",
+                        },
+                        color: "#fff",
+                    }
+                }
+            }
+        });
+    </script>
+{{end}}
