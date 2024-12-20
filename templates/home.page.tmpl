@@ -5,7 +5,7 @@
 {{end}}
 
 {{define "css"}}
-    <link rel="stylesheet" href="/static/css/home.css.css">
+    <link rel="stylesheet" href="/static/css/home.css">
 {{end}}
 
 {{define "content"}}
@@ -223,7 +223,7 @@
     {{end}}
 
     <div class="tasks">
-        <h1>Your Tasks <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal"><i class="fa-solid fa-plus"></i> Task</button></h1>
+        <h1>Your Tasks <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal"><i class="fa-solid fa-plus"></i> Task</button> <a href="/tasks-list" class="btn btn-warning"><i class="fa-solid fa-list"></i> List View</a></h1>
         <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
             <div class="row">
                 <div class="col-8">
@@ -295,7 +295,7 @@
     <hr>
 
     <div class="habits">
-        <h1>Your Habits <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addHabitModal"><i class="fa-solid fa-plus"></i> Habit</button></h1>
+        <h1>Your Habits <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addHabitModal"><i class="fa-solid fa-plus"></i> Habit</button> <a href="/habit-tracker-list" class="btn btn-warning"><i class="fa-solid fa-list"></i> List View</a></h1>
         <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
             <div class="row">
                 <div class="col-8">

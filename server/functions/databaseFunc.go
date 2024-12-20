@@ -77,16 +77,17 @@ func AuthenticateUser(credential string, password string) (bool, string, models.
 }
 
 // GetTasks gets all the tasks of a given user
-func GetTasks(userID int) ([]models.Task, error) {
+func GetTasks(userID int) ([]models.Task, []int, error) {
 	getTasksQuery := `select * from tasks where user_id=$1`
 	rows, err := db.Query(getTasksQuery, userID)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, nil, err
 	}
 	defer rows.Close()
 
 	var tasks []models.Task
+	var completedTasks, incompleteTasks int
 	for rows.Next() {
 		var id, userID int
 		var name string
@@ -97,7 +98,7 @@ func GetTasks(userID int) ([]models.Task, error) {
 		err = rows.Scan(&id, &name, &duration, &completedStatus, &userID, &createdAt, &updatedAt)
 		if err != nil {
 			log.Println(err)
-			return nil, err
+			return nil, nil, err
 		}
 
 		task := models.Task{
@@ -110,10 +111,16 @@ func GetTasks(userID int) ([]models.Task, error) {
 			UpdatedAt:       updatedAt,
 		}
 
+		if completedStatus {
+			completedTasks++
+		} else {
+			incompleteTasks++
+		}
+
 		tasks = append(tasks, task)
 	}
 
-	return tasks, nil
+	return tasks, []int{completedTasks, incompleteTasks}, nil
 }
 
 // CreateTask creates a new task in the database

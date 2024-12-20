@@ -2,6 +2,7 @@ package setup
 
 import (
 	"database/sql"
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -65,7 +66,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
 	}
 
-	tasks, err := functions.GetTasks(user.ID)
+	tasks, _, err := functions.GetTasks(user.ID)
 	if err != nil {
 		log.Println(err)
 	}
@@ -105,6 +106,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Tasks is the handler for the tasks page
 func Tasks(w http.ResponseWriter, r *http.Request) {
 	userInterface := session.Get(r.Context(), "user")
 	user, check := userInterface.(models.User)
@@ -112,14 +114,65 @@ func Tasks(w http.ResponseWriter, r *http.Request) {
 		msg := "Login is required to access this page"
 		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
 	}
-	log.Println(user)
 
-	err := RenderTemplate(w, r, "tasks.page.tmpl", models.TemplateData{})
+	session.Put(r.Context(), "linkTasks", "/tasks")
+	session.Put(r.Context(), "pathTasks", "tasks.page.tmpl")
+
+	tasks, completed, err := functions.GetTasks(user.ID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	completedString, err := json.Marshal(completed)
+	if err != nil {
+		log.Println(err)
+	}
+
+	data["tasks"] = tasks
+	data["completedTasks"] = string(completedString)
+
+	err = RenderTemplate(w, r, "tasks.page.tmpl", models.TemplateData{
+		Data: data,
+	})
 	if err != nil {
 		log.Println(err)
 	}
 }
 
+// TasksListView is the handler for the tasks list page
+func TasksListView(w http.ResponseWriter, r *http.Request) {
+	userInterface := session.Get(r.Context(), "user")
+	user, check := userInterface.(models.User)
+	if !check {
+		msg := "Login is required to access this page"
+		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
+	}
+
+	session.Put(r.Context(), "linkTasks", "/tasks-list")
+	session.Put(r.Context(), "pathTasks", "tasks-list.page.tmpl")
+
+	tasks, completed, err := functions.GetTasks(user.ID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	completedString, err := json.Marshal(completed)
+	if err != nil {
+		log.Println(err)
+	}
+
+	data["tasks"] = tasks
+	data["completedTasks"] = string(completedString)
+
+	err = RenderTemplate(w, r, "tasks-list.page.tmpl", models.TemplateData{
+		Data: data,
+	})
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// HabitTracker is the handler for the habit tracker page
 func HabitTracker(w http.ResponseWriter, r *http.Request) {
 	userInterface := session.Get(r.Context(), "user")
 	user, check := userInterface.(models.User)
@@ -127,14 +180,53 @@ func HabitTracker(w http.ResponseWriter, r *http.Request) {
 		msg := "Login is required to access this page"
 		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
 	}
-	log.Println(user)
 
-	err := RenderTemplate(w, r, "habit-tracker.page.tmpl", models.TemplateData{})
+	session.Put(r.Context(), "linkHabits", "/habit-tracker")
+	session.Put(r.Context(), "pathHabits", "habit-tracker.page.tmpl")
+
+	habits, err := functions.GetHabits(user.ID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	data["habits"] = habits
+
+	err = RenderTemplate(w, r, "habit-tracker.page.tmpl", models.TemplateData{
+		Data: data,
+	})
 	if err != nil {
 		log.Println(err)
 	}
 }
 
+// HabitTrackerListView is the handler for the habits list page
+func HabitTrackerListView(w http.ResponseWriter, r *http.Request) {
+	userInterface := session.Get(r.Context(), "user")
+	user, check := userInterface.(models.User)
+	if !check {
+		msg := "Login is required to access this page"
+		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
+	}
+
+	session.Put(r.Context(), "linkHabits", "/habit-tracker-list")
+	session.Put(r.Context(), "pathHabits", "habit-tracker-list.page.tmpl")
+
+	habits, err := functions.GetHabits(user.ID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	data["habits"] = habits
+
+	err = RenderTemplate(w, r, "habits-list.page.tmpl", models.TemplateData{
+		Data: data,
+	})
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// Notes is the handler for the notes page
 func Notes(w http.ResponseWriter, r *http.Request) {
 	userInterface := session.Get(r.Context(), "user")
 	user, check := userInterface.(models.User)
@@ -142,14 +234,23 @@ func Notes(w http.ResponseWriter, r *http.Request) {
 		msg := "Login is required to access this page"
 		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
 	}
-	log.Println(user)
 
-	err := RenderTemplate(w, r, "notes.page.tmpl", models.TemplateData{})
+	notes, err := functions.GetNotes(user.ID)
+	if err != nil {
+		log.Println(err)
+	}
+
+	data["notes"] = notes
+
+	err = RenderTemplate(w, r, "notes.page.tmpl", models.TemplateData{
+		Data: data,
+	})
 	if err != nil {
 		log.Println(err)
 	}
 }
 
+// Profile is the handler for the profile page
 func Profile(w http.ResponseWriter, r *http.Request) {
 	userInterface := session.Get(r.Context(), "user")
 	user, check := userInterface.(models.User)
@@ -157,9 +258,10 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 		msg := "Login is required to access this page"
 		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
 	}
-	log.Println(user)
 
-	err := RenderTemplate(w, r, "profile.page.tmpl", models.TemplateData{})
+	err := RenderTemplate(w, r, "profile.page.tmpl", models.TemplateData{
+		Data: user,
+	})
 	if err != nil {
 		log.Println(err)
 	}

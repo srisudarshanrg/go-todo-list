@@ -89,7 +89,7 @@ func RegisterPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
-// HomePost handles the post requests to the login page
+// HomePost handles the post requests to the home page
 func HomePost(w http.ResponseWriter, r *http.Request) {
 	userInterface := session.Get(r.Context(), "user")
 	user, check := userInterface.(models.User)
@@ -246,4 +246,77 @@ func HomePost(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
+}
+
+// TasksPost handles the post requests to the tasks page
+func TasksPost(w http.ResponseWriter, r *http.Request) {
+	userInterface := session.Get(r.Context(), "user")
+	user, check := userInterface.(models.User)
+	if !check {
+		msg := "Login is required to access this page"
+		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+	}
+
+	link := session.Get(r.Context(), "linkTasks").(string)
+	// path := session.Get(r.Context(), "pathTasks").(string)
+
+	taskName := r.Form.Get("taskName")
+	addCheckID := r.Form.Get("addCheckID")
+	removeCheckID := r.Form.Get("removeCheckID")
+	deleteTaskID := r.Form.Get("deleteTaskID")
+
+	if taskName != "" {
+		taskDuration, err := strconv.Atoi(r.Form.Get("taskDuration"))
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.CreateTask(taskName, taskDuration, false, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, link, http.StatusSeeOther)
+	} else if addCheckID != "" {
+		addCheckIDConverted, err := strconv.Atoi(addCheckID)
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.AddCheckForTask(addCheckIDConverted, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, link, http.StatusSeeOther)
+	} else if removeCheckID != "" {
+		removeCheckIDConverted, err := strconv.Atoi(removeCheckID)
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.RemoveCheckForTask(removeCheckIDConverted, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, link, http.StatusSeeOther)
+	} else if deleteTaskID != "" {
+		deleteTaskIDConverted, err := strconv.Atoi(deleteTaskID)
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.DeleteTask(deleteTaskIDConverted, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, link, http.StatusSeeOther)
+	}
+
+	session.Remove(r.Context(), "linkTasks")
+	session.Remove(r.Context(), "pathTasks")
+}
+
+// HabitsPost handles the post requests to the habits page
+func HabitsPost(w http.ResponseWriter, r *http.Request) {
+
 }

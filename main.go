@@ -62,12 +62,18 @@ func routes() http.Handler {
 	mux.Get("/login", setup.Login)
 	mux.Get("/register", setup.Register)
 	mux.Get("/tasks", setup.Tasks)
+	mux.Get("/tasks-list", setup.TasksListView)
 	mux.Get("/habit-tracker", setup.HabitTracker)
+	mux.Get("/habit-tracker-list", setup.HabitTrackerListView)
 	mux.Get("/notes", setup.Notes)
 	mux.Get("/profile", setup.Profile)
 	mux.Get("/logout", setup.Logout)
 
 	mux.Post("/home", setup.HomePost)
+	mux.Post("/tasks", setup.TasksPost)
+	mux.Post("/tasks-list", setup.TasksPost)
+	mux.Post("/habit-tracker", setup.HabitsPost)
+	mux.Post("/habit-tracker-list", setup.HabitsPost)
 	mux.Post("/login", setup.LoginPost)
 	mux.Post("/register", setup.RegisterPost)
 
