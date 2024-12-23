@@ -1,0 +1,98 @@
+{{template "base" .}}
+
+{{define "title"}}
+    Notes
+{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/notes.css">
+{{end}}
+
+{{define "content"}}
+    <!-- add note modal -->
+    <div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-bg-dark">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addNoteModalLabel">ADD NOTE</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: #fff;"></button>
+                </div>
+                <form method="post">
+                    <div class="modal-body">
+                        <input type="text" name="noteName" placeholder="Note Name" class="form-control" required>
+                        <textarea name="noteDescription" placeholder="Note Description" class="form-control" style="margin-top: 3%;" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning"><i class="fa-solid fa-plus"></i> Add Note</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- search results for notes modal -->
+    {{if and .PostData (ne (index .PostData "searchResultsNotes") nil)}}
+        <div class="modal show fade d-block" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content text-bg-dark">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">SEARCH RESULTS - YOUR NOTES</h1>
+                        <a href="/notes" class="btn-close" style="background-color: #fff;"></a>
+                    </div>
+                    <div class="modal-body">
+                        {{$searchResultsNotes := index .PostData "searchResultsNotes"}}
+                        {{range $note := $searchResultsNotes}}
+                            <div class="note-container" style="margin-top: 3%;">
+                                <h3>{{$note.Name}}</h3>
+                                <form method="post">
+                                    <input type="hidden" name="noteIDEdit" value="{{$note.ID}}">
+                                    <input type="text" name="noteNameEdit" value="{{$note.Name}}" class="form-control" style="margin-top: 1%;">
+                                    <textarea name="noteDescriptionEdit" class="form-control" rows="3" style="margin-top: 1%;">{{$note.Description}}</textarea>
+                                    <button type="submit" class="btn btn-warning" style="margin-top: 4%;"><i class="fa-solid fa-pencil"></i> Save Changes</button>
+                                </form>                        
+                            </div>
+                        {{end}}
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/notes" class="btn btn-warning">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{end}}
+
+    <div class="notes">
+        <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
+            <div class="row">
+                <div class="col-8">
+                    <input type="text" name="searchNotes" id="searchNotes" placeholder="Search Notes" class="form-control" style="width: 100%;">
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-warning" style="width: 100%;">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <h1 style="text-align: center; margin-top: 1%;">Notes <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addNoteModal"><i class="fa-solid fa-plus"></i> Task</button></h1>
+
+        <div class="all-notes">
+            {{$notes := index .Data "notes"}}
+            {{range $note := $notes}}
+                <div class="note-container">
+                    <h5 class="note-header">{{$note.Name}}</h5>
+                    <form method="post">
+                        <input type="hidden" name="noteIDEdit" value="{{$note.ID}}">
+                        <input type="text" name="noteNameEdit" value="{{$note.Name}}" class="form-control" style="margin-top: 1%;">
+                        <textarea name="noteDescriptionEdit" class="form-control" rows="3" style="margin-top: 1%;">{{$note.Description}}</textarea>
+                        <button type="submit" class="btn btn-warning" style="margin-top: 4%;"><i class="fa-solid fa-pencil"></i> Save Changes</button>
+                    </form>
+                    <form method="post" style="margin-top: 2%;">
+                        <input type="hidden" name="deleteNoteID" value="{{$note.ID}}">
+                        <button type="submit" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can"></i></button>
+                    </form>                        
+                </div>
+            {{end}}
+        </div>
+    </div>
+{{end}}

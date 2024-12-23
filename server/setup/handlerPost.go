@@ -393,3 +393,67 @@ func HabitsPost(w http.ResponseWriter, r *http.Request) {
 	session.Remove(r.Context(), "linkHabits")
 	session.Remove(r.Context(), "pathHabits")
 }
+
+// NotesPost handles the post requests to the notes page
+func NotesPost(w http.ResponseWriter, r *http.Request) {
+	userInterface := session.Get(r.Context(), "user")
+	user, check := userInterface.(models.User)
+	if !check {
+		msg := "Login is required to access this page"
+		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+	}
+
+	noteName := r.Form.Get("noteName")
+	searchNotes := r.Form.Get("searchNotes")
+	noteIDEdit := r.Form.Get("noteIDEdit")
+	deleteNoteID := r.Form.Get("deleteNoteID")
+
+	if noteName != "" {
+		noteDescription := r.Form.Get("noteDescription")
+		err = functions.CreateNote(noteName, noteDescription, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/notes", http.StatusSeeOther)
+	} else if searchNotes != "" {
+		results, err := functions.SearchNote(searchNotes, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+
+		postData := map[string]interface{}{}
+		postData["searchResultsNotes"] = results
+		RenderTemplate(w, r, "notes.page.tmpl", models.TemplateData{
+			Data:     data,
+			PostData: postData,
+		})
+	} else if noteIDEdit != "" {
+		noteIDEditConverted, err := strconv.Atoi(noteIDEdit)
+		if err != nil {
+			log.Println(err)
+		}
+		noteNameEdit := r.Form.Get("noteNameEdit")
+		noteDescriptionEdit := r.Form.Get("noteDescriptionEdit")
+
+		err = functions.UpdateNote(noteIDEditConverted, noteNameEdit, noteDescriptionEdit, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/notes", http.StatusSeeOther)
+	} else if deleteNoteID != "" {
+		deleteNoteIDConverted, err := strconv.Atoi(deleteNoteID)
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.DeleteNote(deleteNoteIDConverted, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, "/notes", http.StatusSeeOther)
+	}
+}

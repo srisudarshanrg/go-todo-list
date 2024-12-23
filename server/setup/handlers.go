@@ -235,6 +235,9 @@ func Notes(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
 	}
 
+	session.Put(r.Context(), "linkNotes", "/notes")
+	session.Put(r.Context(), "pathNotes", "notes.page.tmpl")
+
 	notes, err := functions.GetNotes(user.ID)
 	if err != nil {
 		log.Println(err)
