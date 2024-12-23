@@ -5,25 +5,57 @@
 {{end}}
 
 {{define "css"}}
-    <link rel="stylesheet" href="/static/css/profile.css">
+    <link rel="stylesheet" href="/static/css/profile.css.css">
 {{end}}
 
 {{define "content"}}
+    {{$user := index .Data "user"}}
+    <!-- update profile modal -->
+    <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-bg-dark">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Profile</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: #fff;"></button>
+                </div>
+                <form method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="updateID" value="{{.Data.ID}}">
+
+                        <label for="updateUsername" style="margin-top: 1%;">Username:</label>
+                        <input type="text" name="updateUsername" value="{{$user.Username}}" class="form-control">
+                        
+                        <label for="updateEmail" style="margin-top: 2%;">Email:</label>
+                        <input type="email" name="updateEmail" value="{{$user.Email}}" class="form-control">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <h1 style="text-align: center; margin-top: 1%;">Your Profile</h1>
     <div class="profile">
         <div>
             <h5>Username</h5>
-            <h2>{{.Data.Username}}</h2>
+            <h2>{{$user.Username}}</h2>
         </div>
 
         <div>
             <h5>Email</h5>
-            <h2>{{.Data.Email}}</h2>
+            <h2>{{$user.Email}}</h2>
         </div>
 
         <div>
             <h5>Join Date</h5>
-            <h2>{{.Data.JoinDate}}</h2>
+            <h2>{{$user.JoinDate}}</h2>
         </div>
+    </div>
+
+    <div style="text-align: center;">
+        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateProfileModal"><i class="fa-solid fa-pencil"></i> Edit Profile</button>
     </div>
 {{end}}

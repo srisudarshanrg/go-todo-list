@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/srisudarshanrg/go-todo-list/server/models"
 )
 
@@ -414,4 +415,35 @@ func DeleteNote(id int, userID int) error {
 		return err
 	}
 	return nil
+}
+
+func UpdateProfile(id int, username string, email string) (string, error) {
+	if !govalidator.IsEmail(email) {
+		return "Invalid email address", nil
+	}
+
+	checkExistsQuery := `select * from users where username=$1 or email=$2 and id != $3`
+	result, err := db.Exec(checkExistsQuery, username, email, id)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	if affected > 0 {
+		return "This username or email already exists. Choose another one", nil
+	}
+
+	updateProfileQuery := `update users set username=$1, email=$2, updated_at=$3 where id=$4`
+	_, err = db.Exec(updateProfileQuery, username, email, time.Now(), id)
+	if err != nil {
+		return "", nil
+	}
+
+	return "Profile updated successfully", nil
 }

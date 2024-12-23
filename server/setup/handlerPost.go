@@ -457,3 +457,52 @@ func NotesPost(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/notes", http.StatusSeeOther)
 	}
 }
+
+// ProfilePost handles the post requests to the profile page
+func ProfilePost(w http.ResponseWriter, r *http.Request) {
+	userInterface := session.Get(r.Context(), "user")
+	user, check := userInterface.(models.User)
+	if !check {
+		msg := "Login is required to access this page"
+		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+	}
+
+	updateUsername := r.Form.Get("updateUsername")
+	updateEmail := r.Form.Get("updateEmail")
+
+	msg, err := functions.UpdateProfile(user.ID, updateUsername, updateEmail)
+	if err != nil {
+		log.Println(err)
+	}
+
+	getUserDetailsQuery := `select * from users where id=$1`
+	userRow := db.QueryRow(getUserDetailsQuery, user.ID)
+
+	var id int
+	var username, email, password, joinDate string
+	var createdAt, updatedAt time.Time
+
+	userRow.Scan(&id, &username, &email, &password, &joinDate, &createdAt, &updatedAt)
+
+	userUpdated := models.User{
+		ID:        id,
+		Username:  username,
+		Email:     email,
+		Password:  password,
+		JoinDate:  joinDate,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+	}
+
+	data["user"] = userUpdated
+
+	RenderTemplate(w, r, "profile.page.tmpl", models.TemplateData{
+		Info: msg,
+		Data: data,
+	})
+}

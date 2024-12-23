@@ -75,6 +75,7 @@ func routes() http.Handler {
 	mux.Post("/habit-tracker", setup.HabitsPost)
 	mux.Post("/habit-tracker-list", setup.HabitsPost)
 	mux.Post("/notes", setup.NotesPost)
+	mux.Post("/profile", setup.ProfilePost)
 	mux.Post("/login", setup.LoginPost)
 	mux.Post("/register", setup.RegisterPost)
 
