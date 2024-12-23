@@ -1,0 +1,116 @@
+{{template "base" .}}
+
+{{define "title"}}
+    Habits List
+{{end}}
+
+{{define "css"}}
+    <link rel="stylesheet" href="/static/css/habits-list.css.css">
+{{end}}
+
+{{define "content"}}
+    <!-- add habit modal -->
+    <div class="modal fade" id="addHabitModal" tabindex="-1" aria-labelledby="addHabitModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-bg-dark">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addHabitModalLabel">ADD HABIT</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: #fff;"></button>
+                </div>
+                <form method="post">
+                    <div class="modal-body">
+                        <input type="text" name="habitName" placeholder="Habit Name" class="form-control" required>
+                        <textarea name="habitDescription" placeholder="Habit Description" class="form-control" style="margin-top: 3%;" rows="3"></textarea>
+                        <label for="habitTimeStart" style="margin-top: 3%;">Time Start:</label>
+                        <input type="time" name="habitTimeStart" placeholder="Time Start" class="form-control" required>
+                        <label for="habitTimeEnd" style="margin-top: 3%;">Time End:</label>
+                        <input type="time" name="habitTimeEnd" placeholder="Time End" class="form-control" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-close-modal" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning"><i class="fa-solid fa-plus"></i> Add Habit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- search results for habits modal -->
+    {{if and .PostData (ne (index .PostData "searchResults") nil)}}
+        <div class="modal show fade d-block" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content text-bg-dark">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">SEARCH RESULTS - YOUR HABITS</h1>
+                        <a href="/habit-tracker-list" class="btn-close" style="background-color: #fff;"></a>
+                    </div>
+                    <div class="modal-body">
+                        {{$searchResultsHabits := index .PostData "searchResults"}}
+                        {{range $habit := $searchResultsHabits}}
+                            <div class="habit-container" style="margin-top: 3%;">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <h3>{{$habit.Name}}</h3>
+                                        <p>{{$habit.Description}}</p>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                        <br>
+                                        <p><i class="fa-solid fa-clock"></i> {{$habit.TimeStart}} - {{$habit.TimeEnd}}</p>
+                                        <p><i class="fa-solid fa-stopwatch"></i> {{$habit.Duration}} Minutes</p>
+                                        <form method="post">
+                                            <input type="hidden" name="deleteHabitID" value="{{$habit.ID}}">
+                                            <button type="submit" class="btn btn-outline-danger" style="width: 100%;"><i class="fa-solid fa-trash-can"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {{end}}
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/habit-tracker-list" class="btn btn-warning">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{end}}
+
+    <div class="habits">
+        <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
+            <div class="row">
+                <div class="col-8">
+                    <input type="text" name="searchHabits" id="searchHabits" placeholder="Search Habits" class="form-control" style="width: 100%;">
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-warning" style="width: 100%;">Search</button>
+                </div>
+            </div>
+        </form>
+        <h1 style="margin-top: 1%;">Your Habits <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addHabitModal"><i class="fa-solid fa-plus"></i> Habit</button> <a href="/habit-tracker" class="btn btn-warning"><i class="fa-solid fa-boxes-stacked"></i> Block View</a></h1>
+        <table class="table table-dark table-striped table-hover" style="margin-top: 2%;">
+            <thead>
+                <td>Name</td>
+                <td>Description</td>
+                <td>Time Start</td>
+                <td>Time End</td>
+                <td>Duration</td>
+                <td style="text-align: center;"><i class="fa-solid fa-trash-can text-danger"></i></td>
+            </thead>
+            {{$habits := index .Data "habits"}}
+            {{range $habit := $habits}}
+                <tr>
+                    <td>{{$habit.Name}}</td>
+                    <td>{{$habit.Description}}</td>
+                    <td>{{$habit.TimeStart}}</td>
+                    <td>{{$habit.TimeEnd}}</td>
+                    <td>{{$habit.Duration}} mins</td>
+                    <td style="text-align: center;">
+                        <form method="post">
+                            <input type="hidden" name="deleteHabitID" value="{{$habit.ID}}">
+                            <button type="submit" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            {{end}}
+        </table>
+    </div>
+{{end}}

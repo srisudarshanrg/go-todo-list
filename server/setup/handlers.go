@@ -209,7 +209,7 @@ func HabitTrackerListView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session.Put(r.Context(), "linkHabits", "/habit-tracker-list")
-	session.Put(r.Context(), "pathHabits", "habit-tracker-list.page.tmpl")
+	session.Put(r.Context(), "pathHabits", "habits-list.page.tmpl")
 
 	habits, err := functions.GetHabits(user.ID)
 	if err != nil {

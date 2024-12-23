@@ -318,5 +318,65 @@ func TasksPost(w http.ResponseWriter, r *http.Request) {
 
 // HabitsPost handles the post requests to the habits page
 func HabitsPost(w http.ResponseWriter, r *http.Request) {
+	userInterface := session.Get(r.Context(), "user")
+	user, check := userInterface.(models.User)
+	if !check {
+		msg := "Login is required to access this page"
+		http.Redirect(w, r, "/login?msg="+msg, http.StatusSeeOther)
+	}
 
+	link := session.Get(r.Context(), "linkHabits").(string)
+	path := session.Get(r.Context(), "pathHabits").(string)
+
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+	}
+
+	deleteHabitID := r.Form.Get("deleteHabitID")
+	habitName := r.Form.Get("habitName")
+	searchHabits := r.Form.Get("searchHabits")
+
+	if deleteHabitID != "" {
+		deleteHabitIDConverted, err := strconv.Atoi(deleteHabitID)
+		if err != nil {
+			log.Println(err)
+		}
+		err = functions.DeleteHabit(deleteHabitIDConverted, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, link, http.StatusSeeOther)
+	} else if habitName != "" {
+		habitDescription := r.Form.Get("habitDescription")
+		habitTimeStart, err := time.Parse("15:04", r.Form.Get("habitTimeStart"))
+		if err != nil {
+			log.Println(err)
+		}
+		habitTimeEnd, err := time.Parse("15:04", r.Form.Get("habitTimeEnd"))
+		if err != nil {
+			log.Println(err)
+		}
+
+		err = functions.CreateHabit(habitName, habitDescription, habitTimeStart, habitTimeEnd, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		http.Redirect(w, r, link, http.StatusSeeOther)
+	} else if searchHabits != "" {
+		results, err := functions.SearchHabit(searchHabits, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+
+		postData := map[string]interface{}{}
+		postData["searchResults"] = results
+		RenderTemplate(w, r, path, models.TemplateData{
+			Data:     data,
+			PostData: postData,
+		})
+	}
+
+	session.Remove(r.Context(), "linkHabits")
+	session.Remove(r.Context(), "pathHabits")
 }
