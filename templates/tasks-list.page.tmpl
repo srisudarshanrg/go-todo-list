@@ -27,9 +27,77 @@
         </div>
     </div>
 
+    <!-- search results for tasks modal -->
+    {{if and .PostData (ne (index .PostData "searchResultsTasks") nil)}}
+        <div class="modal show fade d-block" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content text-bg-dark">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">SEARCH RESULTS - TASKS</h1>
+                        <a href="/tasks-list" class="btn-close" style="background-color: #fff;"></a>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-dark table-striped table-hover">
+                            <thead>
+                                <td>Name</td>
+                                <td>Duration</td>
+                                <td>Completion Status</td>
+                                <td><i class="fa-solid fa-trash-can text-danger"></i></td>
+                            </thead>
+                            {{$searchTasks := index .PostData "searchResultsTasks"}}
+                            {{range $task := $searchTasks}}
+                                <tr>
+                                    {{if eq $task.CompletedStatus true}}
+                                        <td><strike>{{$task.Name}}</strike></td>
+                                        <td><strike>{{$task.Duration}} mins</strike></td>
+                                        <td style="color: green;">                                        
+                                            <form method="post" id="removeCheckForm">
+                                                <input type="hidden" name="removeCheckID" value="{{$task.ID}}">
+                                                <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square-check"></i></button>
+                                            </form>
+                                        </td>
+                                    {{else}}
+                                        <td>{{$task.Name}}</td>
+                                        <td>{{$task.Duration}} mins</td>
+                                        <td>
+                                            <form method="post" id="addCheckForm">
+                                                <input type="hidden" name="addCheckID" value="{{$task.ID}}">
+                                                <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square"></i></button>
+                                            </form>
+                                        </td>
+                                    {{end}}
+                                    <td>
+                                        <form method="post">
+                                            <input type="hidden" name="deleteTaskID" value="{{$task.ID}}">
+                                            <button type="submit" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {{end}}
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/tasks-list" class="btn btn-warning">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{end}}
+
     {{$tasks := index .Data "tasks"}}
     <div class="row" style="padding-top: 2%; color: #fff; text-align: center; font-family: 'Open Sans', sans-serif; width: 100%;">
-        <h1 style="text-align: center;">Tasks <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal"><i class="fa-solid fa-plus"></i> Task</button> <a href="/tasks" class="btn btn-warning"><i class="fa-solid fa-boxes-stacked"></i> Block View</a></h1>
+        <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
+            <div class="row">
+                <div class="col-8">
+                    <input type="text" name="searchTasks" id="searchTasks" placeholder="Search Tasks" class="form-control" style="width: 100%;">
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-warning" style="width: 100%;">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <h1 style="text-align: center; margin-top: 1%;">Tasks <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal"><i class="fa-solid fa-plus"></i> Task</button> <a href="/tasks" class="btn btn-warning"><i class="fa-solid fa-boxes-stacked"></i> Block View</a></h1>
         <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 tasks-table" style="margin-top: 1%;">
             <table class="table table-dark table-striped table-hover">
                 <thead>
@@ -40,21 +108,25 @@
                 </thead>
                 {{range $task := $tasks}}
                     <tr>
-                        <td>{{$task.Name}}</td>
-                        <td>{{$task.Duration}} mins</td>
-                        <td style="color: green;">
-                            {{if eq $task.CompletedStatus true}}
+                        {{if eq $task.CompletedStatus true}}
+                            <td><strike>{{$task.Name}}</strike></td>
+                            <td><strike>{{$task.Duration}} mins</strike></td>
+                            <td style="color: green;">                                        
                                 <form method="post" id="removeCheckForm">
                                     <input type="hidden" name="removeCheckID" value="{{$task.ID}}">
                                     <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square-check"></i></button>
                                 </form>
-                            {{else}}
+                            </td>
+                        {{else}}
+                            <td>{{$task.Name}}</td>
+                            <td>{{$task.Duration}} mins</td>
+                            <td>
                                 <form method="post" id="addCheckForm">
                                     <input type="hidden" name="addCheckID" value="{{$task.ID}}">
                                     <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square"></i></button>
                                 </form>
-                            {{end}}
-                        </td>
+                            </td>
+                        {{end}}
                         <td>
                             <form method="post">
                                 <input type="hidden" name="deleteTaskID" value="{{$task.ID}}">

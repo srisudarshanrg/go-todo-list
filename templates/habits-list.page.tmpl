@@ -36,7 +36,7 @@
     </div>
 
     <!-- search results for habits modal -->
-    {{if and .PostData (ne (index .PostData "searchResults") nil)}}
+    {{if and .PostData (ne (index .PostData "searchResultsHabits") nil)}}
         <div class="modal show fade d-block" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content text-bg-dark">
@@ -45,7 +45,7 @@
                         <a href="/habit-tracker-list" class="btn-close" style="background-color: #fff;"></a>
                     </div>
                     <div class="modal-body">
-                        {{$searchResultsHabits := index .PostData "searchResults"}}
+                        {{$searchResultsHabits := index .PostData "searchResultsHabits"}}
                         {{range $habit := $searchResultsHabits}}
                             <div class="habit-container" style="margin-top: 3%;">
                                 <div class="row">

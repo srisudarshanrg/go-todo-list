@@ -263,12 +263,13 @@ func TasksPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	link := session.Get(r.Context(), "linkTasks").(string)
-	// path := session.Get(r.Context(), "pathTasks").(string)
+	path := session.Get(r.Context(), "pathTasks").(string)
 
 	taskName := r.Form.Get("taskName")
 	addCheckID := r.Form.Get("addCheckID")
 	removeCheckID := r.Form.Get("removeCheckID")
 	deleteTaskID := r.Form.Get("deleteTaskID")
+	searchTasks := r.Form.Get("searchTasks")
 
 	if taskName != "" {
 		taskDuration, err := strconv.Atoi(r.Form.Get("taskDuration"))
@@ -310,6 +311,18 @@ func TasksPost(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		http.Redirect(w, r, link, http.StatusSeeOther)
+	} else if searchTasks != "" {
+		results, err := functions.SearchTask(searchTasks, user.ID)
+		if err != nil {
+			log.Println(err)
+		}
+
+		postData := map[string]interface{}{}
+		postData["searchResultsTasks"] = results
+		RenderTemplate(w, r, path, models.TemplateData{
+			Data:     data,
+			PostData: postData,
+		})
 	}
 
 	session.Remove(r.Context(), "linkTasks")
@@ -370,7 +383,7 @@ func HabitsPost(w http.ResponseWriter, r *http.Request) {
 		}
 
 		postData := map[string]interface{}{}
-		postData["searchResults"] = results
+		postData["searchResultsHabits"] = results
 		RenderTemplate(w, r, path, models.TemplateData{
 			Data:     data,
 			PostData: postData,

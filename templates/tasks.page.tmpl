@@ -31,8 +31,63 @@
         </div>
     </div>
 
+    <!-- search results for tasks modal -->
+    {{if and .PostData (ne (index .PostData "searchResultsTasks") nil)}}
+        <div class="modal show fade d-block" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content text-bg-dark">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">SEARCH RESULTS - YOUR TASKS</h1>
+                        <a href="/tasks" class="btn-close" style="background-color: #fff;"></a>
+                    </div>
+                    <div class="modal-body">
+                        {{$searchResultsTasks := index .PostData "searchResultsTasks"}}
+                        {{range $task := $searchResultsTasks}}
+                            <div class="task" style="margin-top: 3%;">
+                                {{if eq $task.CompletedStatus true}}
+                                    <h3><strike>{{$task.Name}}</strike></h3>
+                                    <h4><strike>{{$task.Duration}} mins</strike></h4>
+                                    <form method="post" id="removeCheckForm">
+                                        <input type="hidden" name="removeCheckID" value="{{$task.ID}}">
+                                        <label>Completion Status:</label>
+                                        <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square-check"></i></button>
+                                    </form>
+                                {{else}}
+                                    <h3>{{$task.Name}}</h3>
+                                    <h4>{{$task.Duration}} mins</h4>
+                                    <form method="post" id="addCheckForm">
+                                        <input type="hidden" name="addCheckID" value="{{$task.ID}}">
+                                        <label>Completion Status:</label>
+                                        <button type="submit" style="border: none; background-color: rgb(30, 30, 30); color: green;"><i class="fa-regular fa-square"></i></button>
+                                    </form>
+                                {{end}}
+                                <form method="post" style="margin-top: 1%;">
+                                    <input type="hidden" name="deleteTaskID" value="{{$task.ID}}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button>
+                                </form>
+                            </div>
+                        {{end}}
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/tasks" class="btn btn-warning">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{end}}
+
     <div class="tasks">
-        <h1 style="text-align: center;">Tasks <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal"><i class="fa-solid fa-plus"></i> Task</button> <a href="/tasks-list" class="btn btn-warning"><i class="fa-solid fa-list"></i> List View</a></h1>
+        <form method="post" style="width: 50%; margin-left: auto; margin-right: auto;">
+            <div class="row">
+                <div class="col-8">
+                    <input type="text" name="searchTasks" id="searchTasks" placeholder="Search Tasks" class="form-control" style="width: 100%;">
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-warning" style="width: 100%;">Search</button>
+                </div>
+            </div>
+        </form>
+        <h1 style="text-align: center; margin-top: 1%;">Tasks <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal"><i class="fa-solid fa-plus"></i> Task</button> <a href="/tasks-list" class="btn btn-warning"><i class="fa-solid fa-list"></i> List View</a></h1>
         <div class="task-row">    
             <div class="all-tasks">
                 {{$tasks := index .Data "tasks"}}
